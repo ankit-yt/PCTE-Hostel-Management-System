@@ -9,12 +9,12 @@ function Register() {
         rollNumber: '',
         hostel: '',
         roomNumber: '',
-        name: '', 
-        email: '', 
+        name: '',
+        email: '',
         phone: '',
-        image: null
+        image: null,
     });
-    
+
     const [availableRooms, setAvailableRooms] = useState([]);
     const [message, setMessage] = useState('');
 
@@ -23,9 +23,9 @@ function Register() {
             if (userData.hostel) {
                 try {
                     const response = await axios.get(`${window.location.origin}/api/rooms`, {
-                        params: { hostel: userData.hostel }
+                        params: { hostel: userData.hostel },
                     });
-                    const filteredRooms = response.data.filter(room => room.occupied < room.capacity);
+                    const filteredRooms = response.data.filter((room) => room.occupied < room.capacity);
                     setAvailableRooms(filteredRooms);
                 } catch (err) {
                     setMessage('Error fetching rooms');
@@ -49,24 +49,36 @@ function Register() {
     const handleFileChange = (e) => {
         setUserData({
             ...userData,
-            image: e.target.files[0] // Store the selected file
+            image: e.target.files[0], // Store the selected file
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        // Append all user data to FormData
-        for (const key in userData) {
-            formData.append(key, userData[key]);
+
+        // Append all fields to FormData
+        formData.append('username', userData.username);
+        formData.append('password', userData.password);
+        formData.append('role', userData.role);
+        formData.append('rollNumber', userData.rollNumber);
+        formData.append('hostel', userData.hostel);
+        formData.append('roomNumber', userData.roomNumber);
+        formData.append('name', userData.name);
+        formData.append('email', userData.email);
+        formData.append('phone', userData.phone);
+        if (userData.image) {
+            formData.append('image', userData.image); // Append the image file
         }
+
         try {
             const response = await axios.post(`${window.location.origin}/api/users/register`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data' // Specify the content type
-                }
+                    'Content-Type': 'multipart/form-data', // Set the correct content type
+                },
             });
             setMessage(response.data.message);
+
             // Reset form fields after successful submission
             setUserData({
                 username: '',
@@ -75,10 +87,10 @@ function Register() {
                 rollNumber: '',
                 hostel: '',
                 roomNumber: '',
-                name: '', 
-                email: '', 
+                name: '',
+                email: '',
                 phone: '',
-                image: null
+                image: null,
             });
             setAvailableRooms([]); // Reset available rooms
         } catch (err) {
@@ -123,47 +135,44 @@ function Register() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         >
-                            <option value="">Select Role</option>
+                            <option value="student">Student</option>
                             <option value="admin">Admin</option>
                             <option value="warden">Warden</option>
-                            <option value="student">Student</option>
                         </select>
                     </div>
-
                     <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={userData.email}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Phone</label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    value={userData.phone}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Student Image</label>
-                                <input
-                                    type="file"
-                                    name="image"
-                                    onChange={handleFileChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    accept="image/*" // Accept only image files
-                                    required
-                                />
-                            </div>
-
+                        <label className="block text-sm font-medium mb-2">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={userData.email}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Phone</label>
+                        <input
+                            type="text"
+                            name="phone"
+                            value={userData.phone}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Student Image</label>
+                        <input
+                            type="file"
+                            name="image"
+                            onChange={handleFileChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            accept="image/*" // Accept only image files
+                            required
+                        />
+                    </div>
                     {userData.role === 'student' && (
                         <>
                             <div className="mb-4">
@@ -220,10 +229,8 @@ function Register() {
                                     required
                                 />
                             </div>
-                            
                         </>
                     )}
-
                     <button
                         type="submit"
                         className="w-full bg-[#241553] text-white py-2 rounded-lg hover:bg-[#1d1240]"
