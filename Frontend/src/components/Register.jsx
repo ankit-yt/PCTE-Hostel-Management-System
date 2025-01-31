@@ -24,7 +24,7 @@ useEffect(() => {
         if (hostel) { // Check if hostel type is determined
             try {
                 // Fetch rooms for the specific hostel type
-                const response = await axios.get('http://localhost:5000/api/rooms', {
+                const response = await axios.get(`${window.location.origin}/api/rooms`, {
                     params: { hostel } // Pass hostel type as a query parameter
                 });
 
@@ -72,7 +72,7 @@ const handleSubmit = async (e) => {
         formData.append(key, userData[key]);
     }
     try {
-        const response = await axios.post('http://localhost:5000/api/users/register', formData, {
+        const response = await axios.post(`${window.location.origin}/api/users/register`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data' // Specify the content type
             }
