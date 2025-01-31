@@ -17,26 +17,29 @@ function Register() {
     
     const [availableRooms, setAvailableRooms] = useState([]);
     const [message, setMessage] = useState('');
+    const hostel = userData.hostel === 'Boys hostel' ? 'Boys hostel' : userData.hostel === 'Girls hostel' ? 'Girls hostel' : '';
 
     useEffect(() => {
         const fetchRooms = async () => {
-            if (userData.hostel) {
+            if (hostel) {
                 try {
                     const response = await axios.get(`${window.location.origin}/api/rooms`, {
-                        params: { hostel: userData.hostel }
+                        params: { hostel }
                     });
-                    const filteredRooms = response.data.filter(room => room.occupied < room.capacity);
-                    setAvailableRooms(filteredRooms);
+                    const roomsByHostel = response.data.filter(room => room.hostel === hostel);
+                    const availableRooms = roomsByHostel.filter(room => room.occupied < room.capacity);
+                    setAvailableRooms(availableRooms);
                 } catch (err) {
                     setMessage('Error fetching rooms');
+                    console.error(err);
                 }
             } else {
                 setAvailableRooms([]);
             }
         };
-
+    
         fetchRooms();
-    }, [userData.hostel]);
+    }, [hostel]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -49,25 +52,23 @@ function Register() {
     const handleFileChange = (e) => {
         setUserData({
             ...userData,
-            image: e.target.files[0] // Store the selected file
+            image: e.target.files[0]
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
-        // Append all user data to FormData
         for (const key in userData) {
             formData.append(key, userData[key]);
         }
         try {
             const response = await axios.post(`${window.location.origin}/api/users/register`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data' // Specify the content type
+                    'Content-Type': 'multipart/form-data'
                 }
             });
             setMessage(response.data.message);
-            // Reset form fields after successful submission
             setUserData({
                 username: '',
                 password: '',
@@ -80,17 +81,37 @@ function Register() {
                 phone: '',
                 image: null
             });
-            setAvailableRooms([]); // Reset available rooms
+            setAvailableRooms([]);
         } catch (err) {
             setMessage(err.response?.data?.message || 'Error occurred.');
         }
     };
 
+    const darkThemeStyles = {
+        container: "bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white",
+        formContainer: "bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg shadow-lg p-6",
+        header: "text-3xl font-extrabold text-cyan-400 mb-6 text-center",
+        input: "w-full px-4 py-2 text-black border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500",
+        button: "w-full bg-green-700 hover:bg-green-500 text-white py-2 rounded-lg hover:bg-[#1d1240]",
+        message: "text-red-500 text-center mb-2",
+    };
+
+    const lightThemeStyles = {
+        container: "bg-gradient-to-br from-white via-gray-200 to-gray-100 text-gray-900",
+        formContainer: "bg-white rounded-lg shadow-lg p-6",
+        header: "text-3xl font-extrabold text-blue-600 mb-6 text-center",
+        input: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500",
+        button: "w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700",
+        message: "text-red-600 text-center mb-2",
+    };
+
+    const theme = darkThemeStyles ;
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-[#EBEFFF] p-4">
-            <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
-                <h2 className="text-2xl font-semibold text-center mb-4">Register New User</h2>
-                {message && <p className="text-center text-red-500 mb-2">{message}</p>}
+        <div className={`flex items-center justify-center min-h-screen ${theme.container}`}>
+            <div className={theme.formContainer}>
+                <h2 className={theme.header}>Register New User</h2>
+                {message && <p className={theme.message}>{message}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-2">Username</label>
@@ -99,7 +120,7 @@ function Register() {
                             name="username"
                             value={userData.username}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={theme.input}
                             required
                         />
                     </div>
@@ -110,7 +131,7 @@ function Register() {
                             name="password"
                             value={userData.password}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={theme.input}
                             required
                         />
                     </div>
@@ -120,7 +141,7 @@ function Register() {
                             name="role"
                             value={userData.role}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={theme.input}
                             required
                         >
                             <option value="">Select Role</option>
@@ -129,41 +150,39 @@ function Register() {
                             <option value="student">Student</option>
                         </select>
                     </div>
-
                     <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={userData.email}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Phone</label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    value={userData.phone}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Student Image</label>
-                                <input
-                                    type="file"
-                                    name="image"
-                                    onChange={handleFileChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    accept="image/*" // Accept only image files
-                                    required
-                                />
-                            </div>
-
+                        <label className="block text-sm font-medium mb-2">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={userData.email}
+                            onChange={handleInputChange}
+                            className={theme.input}
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Phone</label>
+                        <input
+                            type="text"
+                            name="phone"
+                            value={userData.phone}
+                            onChange={handleInputChange}
+                            className={theme.input}
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Student Image</label>
+                        <input
+                            type="file"
+                            name="image"
+                            onChange={handleFileChange}
+                            className={theme.input}
+                            accept="image/*"
+                            required
+                        />
+                    </div>
                     {userData.role === 'student' && (
                         <>
                             <div className="mb-4">
@@ -173,20 +192,17 @@ function Register() {
                                     name="rollNumber"
                                     value={userData.rollNumber}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className={theme.input}
                                     required
                                 />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium mb-2">Hostel</label>
-                                <input
-                                    type="text"
-                                    name="hostel"
-                                    value={userData.hostel}
-                                    onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
+                                <select name="hostel" value={userData.hostel} onChange={handleInputChange} className={theme.input} required>
+                                    <option value="">Select Hostel</option>
+                                    <option value="Boys hostel">Boys hostel</option>
+                                    <option value="Girls hostel">Girls hostel</option>
+                                </select>
                             </div>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium mb-2">Room Number</label>
@@ -194,7 +210,7 @@ function Register() {
                                     name="roomNumber"
                                     value={userData.roomNumber}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className={theme.input}
                                     required
                                 >
                                     <option value="">Select Room</option>
@@ -216,18 +232,13 @@ function Register() {
                                     name="name"
                                     value={userData.name}
                                     onChange={handleInputChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className={theme.input}
                                     required
                                 />
                             </div>
-                            
                         </>
                     )}
-
-                    <button
-                        type="submit"
-                        className="w-full bg-[#241553] text-white py-2 rounded-lg hover:bg-[#1d1240]"
-                    >
+                    <button type="submit" className={theme.button}>
                         Register
                     </button>
                 </form>
