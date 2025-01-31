@@ -72,7 +72,7 @@ card:"bg-gradient-to-r from-gray-800 to-gray-900 rounded-3xl shadow-2xl transfor
 
   return (
     <div className={`p-6 relative ${theme.container} h-full overflow-auto`} >
-      <h2 className={theme.header}>Announcement</h2>
+      
 
 {loading ? (
     <p className="text-center text-gray-500">Loading...</p>
