@@ -206,7 +206,7 @@ function Hostel_rooms({ isDarkTheme }) {
   const theme = isDarkTheme ? darkThemeStyles : lightThemeStyles;
 
   return (
-    <div className={`p-6 lg:h-full h-screen lg:w-full w-screen  ${theme.container}`}>
+    <div className={`p-6 lg:h-full h-screen overflow-auto lg:w-full w-screen  ${theme.container}`}>
       <h2 className={theme.header}>Hostel Management</h2>
 
       {loading ? (
