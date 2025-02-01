@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     name: { type: String }, // New field
     email: { type: String }, // New field
     phone: { type: String }, // New field
-    image: { type: String , required: true }, // New field 
+    image: { type: String}, // New field 
 });
 
 // Hash the password before saving
