@@ -6,6 +6,8 @@ import Dashboard from '../dashboard/Dashboard';
 import Profile from './sections/Profile';
 import WardenComplaint from './sections/WardenComplaint';
 import Entry from './sections/Entry';
+import { RiMessage2Fill } from "react-icons/ri";
+
 function Warden() {
     const navigate = useNavigate();
 
@@ -38,7 +40,8 @@ function Warden() {
         
         {
           sec_name: "Complaint",
-          icon: <MdOutlineCoPresent />,
+          icon: <RiMessage2Fill />
+          ,
           element: <WardenComplaint isDarkTheme={isDarkTheme}/>
       },
       
