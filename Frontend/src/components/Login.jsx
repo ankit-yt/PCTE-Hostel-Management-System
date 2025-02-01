@@ -100,12 +100,7 @@ function Login() {
             >
               Login
             </button>
-            <h5 className="w-full text-center text-sm mt-4">
-              Do not have an account?{" "}
-              <a className="font-semibold text-[#656ED3]" href="">
-                Register
-              </a>
-            </h5>
+            
           </form>
         </div>
       </div>
